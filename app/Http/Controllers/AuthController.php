@@ -49,8 +49,8 @@ class AuthController extends Controller
             'us_login',
             'us_contrasenia',
             'us_nombre',
-        );
-        if ($user->us_contrasenia == md5($request->us_contrasenia)) {
+        )->where('us_contrasenia', '=', $request->us_contrasenia)->first();
+        if ($user->us_contrasenia == ($request->us_contrasenia)) {
             $token = auth()->login($user);
             return response()->json([
                 'access_token' => $token,
@@ -58,6 +58,7 @@ class AuthController extends Controller
                 //'expires_in' => auth()->factory()->getTTL() * 60,
             ]);
         }
+        return response()->json(['error' => 'Unauthorized'], 401);
 
 
     }
@@ -91,7 +92,7 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh());
+        //return $this->respondWithToken(auth()->refresh());
     }
 
     /**
@@ -106,7 +107,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+           // 'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
 
