@@ -42,6 +42,13 @@ class AuthController extends Controller
                 "status" => 400
             ], 400);
         }
+        $modulos = DB::select(' SELECT u.us_login , ru.url_login, r.rol_codigo, urm.urm_codigo_rol, mo.mo_id
+        from adm_usuario u
+        JOIN adm_rol_usuario ru ON ru.url_login = u.us_login
+        JOIN adm_rol r ON r.rol_codigo  = ru.url_rol
+        JOIN ccc_usuario_rol_modulo urm ON urm.urm_id_modulo =r.rol_codigo
+        JOIN ccc_modulo mo ON mo.mo_id= urm.urm_id_modulo
+        ');
         $user = adm_usuario::select(
             'us_login',
             'us_contrasenia',
@@ -49,15 +56,33 @@ class AuthController extends Controller
         )->where('us_login', '=', $request->us_login)->first();
         if ($user->us_contrasenia == md5($request->us_contrasenia)) {
             $token = auth()->login($user);
+            $moduloUsuario='';
+            foreach ($modulos as $modulo) {
+                if (($request->us_login == $modulo->us_login) &&($modulo->mo_id == 2))
+                {
+                    $moduloUsuario='CONTROL DE CERRAMIENTO';
+                }
+                if (($request->us_login == $modulo->us_login) &&($modulo->mo_id == 1))
+                {
+                    $moduloUsuario='CONTROL DE CONSTRUCCIONES';
+                }
+                if (($request->us_login == $modulo->us_login) &&($modulo->mo_id == 3))
+                {
+                    $moduloUsuario='CONTROL DE PUBLICIDAD';
+                }
+            }
             return response()->json([
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                //'expires_in' => JWTAuth()->factory ()->getTTL() * 60,
-                // 'expires_in' => auth()->guard()->factory()->getTTL() * 60,
                 'expires_in' => JWTAuth::factory()->getTTL() * 60,
+                'modulo_Usuario'=> $moduloUsuario,
             ]);
-            return response()->json(['error' => 'No autorizado xd'], 401);
+            return response()->json(['error' => 'No autorizado'], 401);
         }
+
+        
+
+        
     }
 
     /**
