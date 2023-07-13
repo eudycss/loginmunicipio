@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Login;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Validator;
-use App\Models\adm_usuario;
+use App\Models\Login\adm_usuario;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -35,6 +36,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'us_login' => 'required|string|max:25',
+            //'us_contrasenia' => 'required|string',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -56,33 +58,25 @@ class AuthController extends Controller
         )->where('us_login', '=', $request->us_login)->first();
         if ($user->us_contrasenia == md5($request->us_contrasenia)) {
             $token = auth()->login($user);
-            $moduloUsuario='';
+            $moduloUsuario = '';
+            $listaModulos =[];
             foreach ($modulos as $modulo) {
-                if (($request->us_login == $modulo->us_login) &&($modulo->mo_id == 2))
-                {
-                    $moduloUsuario='CONTROL DE CERRAMIENTO';
+                if (($request->us_login == $modulo->us_login)) {
+                    array_push($listaModulos,$modulo->mo_id);
                 }
-                if (($request->us_login == $modulo->us_login) &&($modulo->mo_id == 1))
-                {
-                    $moduloUsuario='CONTROL DE CONSTRUCCIONES';
-                }
-                if (($request->us_login == $modulo->us_login) &&($modulo->mo_id == 3))
-                {
-                    $moduloUsuario='CONTROL DE PUBLICIDAD';
-                }
+
+            
             }
             return response()->json([
                 'access_token' => $token,
                 'token_type' => 'bearer',
                 'expires_in' => JWTAuth::factory()->getTTL() * 60,
-                'modulo_Usuario'=> $moduloUsuario,
+                'modulo_Usuario' => $listaModulos,
+
+
             ]);
-            return response()->json(['error' => 'No autorizado'], 401);
         }
-
-        
-
-        
+        return response()->json(['error' => 'No autorizado'], 401);
     }
 
     /**
@@ -159,5 +153,4 @@ class AuthController extends Controller
             'user' => $user
         ], 201);
     } */
-    
 }

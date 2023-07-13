@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Login\AuthController;
 use App\Http\Controllers\modeloController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

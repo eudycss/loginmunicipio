@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Login;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +13,7 @@ class adm_usuario extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-     /**
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -48,8 +48,7 @@ class adm_usuario extends Authenticatable implements JWTSubject
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-    ];
+    protected $hidden = [];
 
 
     public function getJWTIdentifier()
@@ -79,5 +78,4 @@ class adm_usuario extends Authenticatable implements JWTSubject
             'name' => $this->us_nombre,
         ];
     }
-
 }
